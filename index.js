@@ -19,27 +19,18 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/:date?", function (req, res) {
-    const date = req.params.date || new Date().toUTCString();
+app.get("/api/whoami", function (req, res) {
 
     try {
-        const dateAsNumber = Number(date);
-        const isNumber = !isNaN(dateAsNumber) && isFinite(dateAsNumber);
+        const ip = req.socket.remoteAddress;
+        const language = req.headers['accept-language'] || 'Non spécifiée';
+        const software = req.headers['user-agent'] || 'Non spécifié';
 
-        const input = new Date(isNumber ? JSON.parse(date) : date);
-
-        if (isNaN(input.getTime())) {
-            throw new Error();
-        }
-
-        const utcDate = input.toUTCString();
-        const unixTimestamp = Math.floor(input.getTime());
-
-        res.json({ "unix": unixTimestamp, "utc": utcDate });
+        res.json({ "ipaddress": ip, "language": language, "software": software });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ "error": "Invalid Date" });
+        res.status(500).json({ "error": "Invalid data" });
     }
 
 });
